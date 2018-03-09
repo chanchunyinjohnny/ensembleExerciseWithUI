@@ -1,0 +1,104 @@
+<html>
+<header><title>This is title</title></header>
+
+<head>
+    <script src="./javascripts/jquery-3.3.1.js"></script>
+</head>
+
+<body>
+<div>
+    <p>Mode 1: count from text box</p>
+    <textarea rows="4" cols="100" id="textArea">
+Please input test text here, only the first line will be read.
+Example:
+A mate material may maybe right maybe
+    </textarea>
+    <div>
+        <button onclick="countFromTextBox()">count from text box</button>
+    </div>
+</div>
+
+<div>
+    <p>Mode 2: count from file</p>
+    <div>
+        <input type="file" id="txtfiletoread" />
+        <p id = "fileContent"></p>
+    </div>
+    <div>
+        <button onclick="countFromFileTextContent()">count from file</button>
+    </div>
+</div>
+
+<div>
+    <p>Result:</p>
+    <pre>
+        <div id="resultArea">
+        </div>
+    </pre>
+</div>
+
+<script>
+    window.onload = function () {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            let fileSelected = document.getElementById('txtfiletoread');
+            fileSelected.addEventListener('change', function (e) {
+                let fileExtension = /text.*/;
+                let fileTobeRead = fileSelected.files[0];
+                if (fileTobeRead.type.match(fileExtension)) {
+                    let fileReader = new FileReader();
+                    fileReader.onload = function (e) {
+                        console.log(fileReader.result);
+                        let content = fileReader.result;
+
+                        $('#fileContent').text(content);
+
+                    }
+                    fileReader.readAsText(fileTobeRead);
+                }
+                else {
+                    alert("Please select text file");
+                }
+
+            }, false);
+        }
+        else {
+            alert("Files are not supported");
+        }
+    }
+
+    function countFromTextBox() {
+        let input = $('#textArea').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/web",
+            data: {
+                textData: input
+            },
+            success: success
+        });
+    }
+
+    function countFromFileTextContent(){
+
+        let input = $('#fileContent').text();
+
+        console.log(input);
+
+        $.ajax({
+            type: "POST",
+            url: "/web",
+            data: {
+                textData: input
+            },
+            success: success
+        });
+    }
+
+    function success(data) {
+        $("#resultArea").text(data);
+    }
+</script>
+
+</body>
+</html>
